@@ -1,0 +1,90 @@
+version: '3.8'
+
+networks:
+  # Internal network — services communicate here
+  backend-net:
+    driver: bridge
+
+  # Gateway network — only gateway touches this AND backend-net
+  gateway-net:
+    driver: bridge
+
+services:
+
+  # ─── Room Service ─────────────────────────────
+  room-service:
+    build:
+      context: ./room-service
+      dockerfile: Dockerfile
+    container_name: room-service
+    networks:
+      - backend-net
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Guest Service ────────────────────────────
+  guest-service:
+    build:
+      context: ./guest-service
+      dockerfile: Dockerfile
+    container_name: guest-service
+    networks:
+      - backend-net
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Reservation Service ──────────────────────
+  reservation-service:
+    build:
+      context: ./reservation-service
+      dockerfile: Dockerfile
+    container_name: reservation-service
+    networks:
+      - backend-net
+    environment:
+      - PORT=3003
+      - NODE_ENV=production
+      - ROOM_SERVICE_URL=http://room-service:3001
+      - GUEST_SERVICE_URL=http://guest-service:3002
+    depends_on:
+      room-service:
+        condition: service_healthy
+      guest-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── API Gateway (Nginx) ──────────────────────
+  api-gateway:
+    image: nginx:alpine
+    container_name: api-gateway
+    networks:
+      - backend-net
+      - gateway-net
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:8080"   # ONLY exposed port
+    depends_on:
+      - room-service
+      - guest-service
+      - reservation-service
+    restart: unless-stopped

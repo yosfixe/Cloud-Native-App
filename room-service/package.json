@@ -1,0 +1,16 @@
+{
+  "name": "room-service",
+  "version": "1.0.0",
+  "description": "Hotel Booking Platform — Room Service",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
