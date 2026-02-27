@@ -1,0 +1,234 @@
+{
+  "info": {
+    "name": "Hotel Booking Platform",
+    "description": "API collection for the Hotel Booking Platform microservices backend. All requests go through the API Gateway on port 8080.",
+    "_postman_id": "hotel-booking-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Gateway",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/gateway/health",
+            "description": "Check if the API Gateway is running."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Room Service",
+      "item": [
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/rooms",
+            "description": "Retrieve all rooms."
+          }
+        },
+        {
+          "name": "Get Room by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/rooms/:id",
+            "url_raw": "{{base_url}}/rooms/ROOM_ID_HERE",
+            "description": "Retrieve a single room by its Firestore document ID."
+          }
+        },
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/rooms",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"301\",\n  \"type\": \"suite\",\n  \"price\": 300,\n  \"capacity\": 3\n}"
+            },
+            "description": "Create a new hotel room."
+          }
+        },
+        {
+          "name": "Update Room",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/rooms/:id",
+            "url_raw": "{{base_url}}/rooms/ROOM_ID_HERE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 350,\n  \"capacity\": 4\n}"
+            },
+            "description": "Update an existing room by ID."
+          }
+        },
+        {
+          "name": "Toggle Room Availability",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/rooms/:id/availability",
+            "url_raw": "{{base_url}}/rooms/ROOM_ID_HERE/availability",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"available\": false\n}"
+            },
+            "description": "Set room availability to true or false."
+          }
+        },
+        {
+          "name": "Delete Room",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/rooms/:id",
+            "url_raw": "{{base_url}}/rooms/ROOM_ID_HERE",
+            "description": "Delete a room by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Guest Service",
+      "item": [
+        {
+          "name": "Get All Guests",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/guests",
+            "description": "Retrieve all registered guests."
+          }
+        },
+        {
+          "name": "Get Guest by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/guests/:id",
+            "url_raw": "{{base_url}}/guests/GUEST_ID_HERE",
+            "description": "Retrieve a single guest by their Firestore document ID."
+          }
+        },
+        {
+          "name": "Register Guest",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/guests",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1-555-0199\"\n}"
+            },
+            "description": "Register a new guest."
+          }
+        },
+        {
+          "name": "Update Guest",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/guests/:id",
+            "url_raw": "{{base_url}}/guests/GUEST_ID_HERE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1-555-0200\"\n}"
+            },
+            "description": "Update an existing guest by ID."
+          }
+        },
+        {
+          "name": "Delete Guest",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/guests/:id",
+            "url_raw": "{{base_url}}/guests/GUEST_ID_HERE",
+            "description": "Delete a guest by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservation Service",
+      "item": [
+        {
+          "name": "Get All Reservations",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/reservations",
+            "description": "Retrieve all reservations."
+          }
+        },
+        {
+          "name": "Get Reservation by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/reservations/:id",
+            "url_raw": "{{base_url}}/reservations/RESERVATION_ID_HERE",
+            "description": "Retrieve a single reservation by its Firestore document ID."
+          }
+        },
+        {
+          "name": "Create Reservation",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/reservations",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"ROOM_ID_HERE\",\n  \"guestId\": \"GUEST_ID_HERE\",\n  \"checkIn\": \"2026-03-01\",\n  \"checkOut\": \"2026-03-05\"\n}"
+            },
+            "description": "Create a new reservation. Calls Room Service and Guest Service internally to validate the room and guest, calculate total price, and confirm booking."
+          }
+        },
+        {
+          "name": "Cancel Reservation",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/reservations/:id",
+            "url_raw": "{{base_url}}/reservations/RESERVATION_ID_HERE",
+            "description": "Cancel a reservation by ID. Sets status to CANCELLED."
+          }
+        }
+      ]
+    }
+  ]
+}
