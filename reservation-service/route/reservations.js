@@ -1,14 +1,14 @@
+cat > /home/claude/hotel-services/reservation-service/route/reservations.js << 'EOF'
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
+const db = require('../firebase');
+
+const COLLECTION = 'reservations';
 
 // Service URLs from environment variables — not hardcoded
-const ROOM_SERVICE_URL = process.env.ROOM_SERVICE_URL || 'http://localhost:3001';
-const GUEST_SERVICE_URL = process.env.GUEST_SERVICE_URL || 'http://localhost:3002';
-
-// In-memory reservation store
-let reservations = [];
-let reservationIdCounter = 1;
+const ROOM_SERVICE_URL = process.env.ROOM_SERVICE_URL || 'http://localhost:8081';
+const GUEST_SERVICE_URL = process.env.GUEST_SERVICE_URL || 'http://localhost:8082';
 
 // Helper: Fetch room with timeout + basic retry
 async function fetchRoom(roomId, retries = 2) {
@@ -16,13 +16,13 @@ async function fetchRoom(roomId, retries = 2) {
         try {
             const response = await axios.get(
                 `${ROOM_SERVICE_URL}/rooms/${roomId}`,
-                { timeout: 3000 } // 3 second timeout — circuit breaker concept
+                { timeout: 3000 }
             );
-            return response.data.data; // unwrap service envelope
+            return response.data.data;
         } catch (error) {
             console.warn(`Attempt ${attempt}/${retries} failed for room ${roomId}`);
             if (attempt === retries) throw error;
-            await new Promise(r => setTimeout(r, 500 * attempt)); // exponential backoff
+            await new Promise(r => setTimeout(r, 500 * attempt));
         }
     }
 }
@@ -35,7 +35,7 @@ async function fetchGuest(guestId, retries = 2) {
                 `${GUEST_SERVICE_URL}/guests/${guestId}`,
                 { timeout: 3000 }
             );
-            return response.data.data; // unwrap service envelope
+            return response.data.data;
         } catch (error) {
             console.warn(`Attempt ${attempt}/${retries} failed for guest ${guestId}`);
             if (attempt === retries) throw error;
@@ -70,20 +70,15 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ error: "Guest not found" });
         }
         if (!room.available) {
-            return res.status(409).json({
-                error: "Room is not available",
-                roomNumber: room.number
-            });
+            return res.status(409).json({ error: "Room is not available", roomNumber: room.number });
         }
 
-        // Calculate total nights and price
         const nights = Math.ceil(
             (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)
         );
         const totalPrice = room.price * nights;
 
         const reservation = {
-            id: reservationIdCounter++,
             guestId: guest.id,
             guestName: guest.name,
             roomId: room.id,
@@ -98,16 +93,14 @@ router.post('/', async (req, res) => {
             createdAt: new Date().toISOString()
         };
 
-        reservations.push(reservation);
-
+        const docRef = await db.collection(COLLECTION).add(reservation);
         res.status(201).json({
             service: "reservation-service",
             message: "Reservation created successfully",
-            data: reservation
+            data: { id: docRef.id, ...reservation }
         });
     } catch (error) {
         console.error("Reservation creation failed:", error.message);
-        // Return a meaningful error — not a generic 500
         if (error.code === 'ECONNREFUSED') {
             return res.status(503).json({
                 error: "A dependent service is unavailable — please retry",
@@ -119,28 +112,46 @@ router.post('/', async (req, res) => {
 });
 
 // GET /reservations — List all reservations
-router.get('/', (req, res) => {
-    res.json({ service: "reservation-service", count: reservations.length, data: reservations });
+router.get('/', async (req, res) => {
+    try {
+        const snapshot = await db.collection(COLLECTION).get();
+        const reservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.json({ service: "reservation-service", count: reservations.length, data: reservations });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch reservations", detail: error.message });
+    }
 });
 
 // GET /reservations/:id
-router.get('/:id', (req, res) => {
-    const reservation = reservations.find(r => r.id == req.params.id);
-    if (!reservation) {
-        return res.status(404).json({ error: `Reservation ${req.params.id} not found` });
+router.get('/:id', async (req, res) => {
+    try {
+        const doc = await db.collection(COLLECTION).doc(req.params.id).get();
+        if (!doc.exists) {
+            return res.status(404).json({ error: `Reservation ${req.params.id} not found` });
+        }
+        res.json({ service: "reservation-service", data: { id: doc.id, ...doc.data() } });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch reservation", detail: error.message });
     }
-    res.json({ service: "reservation-service", data: reservation });
 });
 
 // DELETE /reservations/:id — Cancel a reservation
-router.delete('/:id', (req, res) => {
-    const index = reservations.findIndex(r => r.id == req.params.id);
-    if (index === -1) {
-        return res.status(404).json({ error: `Reservation ${req.params.id} not found` });
-    }
+router.delete('/:id', async (req, res) => {
+    try {
+        const ref = db.collection(COLLECTION).doc(req.params.id);
+        const doc = await ref.get();
 
-    reservations[index].status = "CANCELLED";
-    res.json({ service: "reservation-service", message: "Reservation cancelled successfully", data: reservations[index] });
+        if (!doc.exists) {
+            return res.status(404).json({ error: `Reservation ${req.params.id} not found` });
+        }
+
+        await ref.update({ status: "CANCELLED" });
+        const updated = await ref.get();
+        res.json({ service: "reservation-service", message: "Reservation cancelled successfully", data: { id: updated.id, ...updated.data() } });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to cancel reservation", detail: error.message });
+    }
 });
 
 module.exports = router;
+EOF
