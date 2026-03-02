@@ -3,7 +3,7 @@ const logger = require('./middleware/logger');
 const guestRoutes = require('./route/guests');
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 8082;
 
 app.use(express.json());
 app.use(logger);

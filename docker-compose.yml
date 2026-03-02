@@ -23,7 +23,7 @@ services:
       - PORT=8081
       - NODE_ENV=production
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/health"]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -41,7 +41,7 @@ services:
       - PORT=8082
       - NODE_ENV=production
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8082/health"]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -58,15 +58,15 @@ services:
     environment:
       - PORT=8083
       - NODE_ENV=production
-      - ROOM_SERVICE_URL=http://room-service:3001
-      - GUEST_SERVICE_URL=http://guest-service:3002
+      - ROOM_SERVICE_URL=http://room-service:8081
+      - GUEST_SERVICE_URL=http://guest-service:8082
     depends_on:
       room-service:
         condition: service_healthy
       guest-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8083/health"]
       interval: 15s
       timeout: 5s
       retries: 3

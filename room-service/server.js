@@ -3,7 +3,7 @@ const logger = require('./middleware/logger');
 const roomRoutes = require('./route/rooms');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8081;
 
 app.use(express.json());
 app.use(logger);
