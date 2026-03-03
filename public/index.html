@@ -1,89 +1,63 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotel Booking API</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: monospace; background: #f9f9f9; color: #222; padding: 40px 24px; max-width: 800px; margin: 0 auto; }
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    .sub { color: #888; font-size: 13px; margin-bottom: 40px; }
+    h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin: 32px 0 12px; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; }
+    .endpoint { display: flex; align-items: flex-start; gap: 16px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    .method { font-size: 12px; font-weight: bold; width: 52px; padding: 2px 6px; border-radius: 3px; text-align: center; flex-shrink: 0; margin-top: 1px; }
+    .get    { background: #e6f4ea; color: #2e7d32; }
+    .post   { background: #e8f0fe; color: #1a56a0; }
+    .put    { background: #fff3e0; color: #e65100; }
+    .patch  { background: #f3e5f5; color: #6a1b9a; }
+    .delete { background: #fce4e4; color: #c62828; }
+    .path { font-size: 14px; }
+    .desc { font-size: 12px; color: #888; margin-top: 2px; }
+    .gateway { background: #f0f0f0; padding: 12px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 32px; }
+    .gateway span { color: #1a56a0; }
+    footer { margin-top: 48px; font-size: 12px; color: #bbb; }
+  </style>
+</head>
+<body>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.9.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.9.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  <h1>Hotel Booking API</h1>
+  <p class="sub">Cloud-Native Microservices &mdash; Youssef Kazti</p>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+  <div class="gateway">
+    All requests go through the API Gateway at <span>http://localhost:8080</span>
+  </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+  <h2>Room Service</h2>
+  <div class="endpoint"><span class="method get">GET</span><div><div class="path">/rooms</div><div class="desc">List all rooms</div></div></div>
+  <div class="endpoint"><span class="method get">GET</span><div><div class="path">/rooms/:id</div><div class="desc">Get a room by ID</div></div></div>
+  <div class="endpoint"><span class="method post">POST</span><div><div class="path">/rooms</div><div class="desc">Create a room — body: number, type, price, capacity</div></div></div>
+  <div class="endpoint"><span class="method put">PUT</span><div><div class="path">/rooms/:id</div><div class="desc">Update a room</div></div></div>
+  <div class="endpoint"><span class="method patch">PATCH</span><div><div class="path">/rooms/:id/availability</div><div class="desc">Toggle availability — body: available (boolean)</div></div></div>
+  <div class="endpoint"><span class="method delete">DELETE</span><div><div class="path">/rooms/:id</div><div class="desc">Delete a room</div></div></div>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+  <h2>Guest Service</h2>
+  <div class="endpoint"><span class="method get">GET</span><div><div class="path">/guests</div><div class="desc">List all guests</div></div></div>
+  <div class="endpoint"><span class="method get">GET</span><div><div class="path">/guests/:id</div><div class="desc">Get a guest by ID</div></div></div>
+  <div class="endpoint"><span class="method post">POST</span><div><div class="path">/guests</div><div class="desc">Register a guest — body: name, email, phone</div></div></div>
+  <div class="endpoint"><span class="method put">PUT</span><div><div class="path">/guests/:id</div><div class="desc">Update a guest</div></div></div>
+  <div class="endpoint"><span class="method delete">DELETE</span><div><div class="path">/guests/:id</div><div class="desc">Delete a guest</div></div></div>
+
+  <h2>Reservation Service</h2>
+  <div class="endpoint"><span class="method get">GET</span><div><div class="path">/reservations</div><div class="desc">List all reservations</div></div></div>
+  <div class="endpoint"><span class="method get">GET</span><div><div class="path">/reservations/:id</div><div class="desc">Get a reservation by ID</div></div></div>
+  <div class="endpoint"><span class="method post">POST</span><div><div class="path">/reservations</div><div class="desc">Create a reservation — body: roomId, guestId, checkIn, checkOut</div></div></div>
+  <div class="endpoint"><span class="method delete">DELETE</span><div><div class="path">/reservations/:id</div><div class="desc">Cancel a reservation</div></div></div>
+
+  <h2>Gateway Health</h2>
+  <div class="endpoint"><span class="method get">GET</span><div><div class="path">/gateway/health</div><div class="desc">Check API Gateway status</div></div></div>
+
+  <footer><link href="https://github.com/yosfixe/Cloud-Native-App">Github Link</link> &nbsp;&middot;&nbsp; hotel-booking-6247a.web.app</footer>
+
+</body>
 </html>
