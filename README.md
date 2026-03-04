@@ -46,6 +46,83 @@ All services are accessible through the gateway at `http://localhost:8080`.
 API documentation is hosted on Firebase Hosting:
 https://hotel-booking-6247a.web.app
 
+## File Architecture
+
+```
+├── Cloud-Native-App
+│   ├── api-gateway
+│   │   └── nginx.conf
+│   ├── guest-service
+│   │   ├── middleware
+│   │   │   └── logger.js
+│   │   ├── route
+│   │   │   └── guests.js
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   └── server.js
+│   ├── reservation-service
+│   │   ├── middleware
+│   │   │   └── logger.js
+│   │   ├── route
+│   │   │   └── reservations.js
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   └── server.js
+│   ├── room-service
+│   │   ├── middleware
+│   │   │   └── logger.js
+│   │   ├── route
+│   │   │   └── rooms.js
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   └── server.js
+│   ├── README.md
+│   ├── Screenshot 2026-02-26 183827.png
+│   ├── architecture-diagram.png
+│   └── docker-compose.yml
+├── api-gateway
+│   └── nginx.conf
+├── guest-service
+│   ├── middleware
+│   │   └── logger.js
+│   ├── route
+│   │   └── guests.js
+│   ├── Dockerfile
+│   ├── firebase.js
+│   ├── package.json
+│   └── server.js
+├── public
+│   ├── 404.html
+│   └── index.html
+├── reservation-service
+│   ├── middleware
+│   │   └── logger.js
+│   ├── route
+│   │   └── reservations.js
+│   ├── Dockerfile
+│   ├── firebase.js
+│   ├── package.json
+│   └── server.js
+├── room-service
+│   ├── middleware
+│   │   └── logger.js
+│   ├── route
+│   │   └── rooms.js
+│   ├── Dockerfile
+│   ├── firebase.js
+│   ├── package.json
+│   └── server.js
+├── .firebaserc
+├── .gitignore
+├── README.md
+├── architecture-diagram.png
+├── docker-compose.yml
+├── firebase.json
+├── postman-collection.json
+└── {
+```
+
+
 ## Tech Stack
 
 - Node.js + Express
