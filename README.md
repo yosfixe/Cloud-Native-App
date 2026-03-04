@@ -19,23 +19,6 @@ docker-compose up --build
 
 All services are accessible through the gateway at `http://localhost:8080`.
 
-## Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /rooms | List all rooms |
-| POST | /rooms | Create a room |
-| PUT | /rooms/:id | Update a room |
-| PATCH | /rooms/:id/availability | Toggle availability |
-| DELETE | /rooms/:id | Delete a room |
-| GET | /guests | List all guests |
-| POST | /guests | Register a guest |
-| PUT | /guests/:id | Update a guest |
-| DELETE | /guests/:id | Delete a guest |
-| GET | /reservations | List all reservations |
-| POST | /reservations | Create a reservation |
-| DELETE | /reservations/:id | Cancel a reservation |
-| GET | /gateway/health | Gateway health check |
 
 ## Architecture Diagram
 
